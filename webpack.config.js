@@ -2,16 +2,16 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  // entry: './src/main.js',  //demo调试
-  entry: './src/index.js', //打包使用
+  entry: './src/main.js',  //demo调试
+  // entry: './src/index.js', //打包使用
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    // filename: 'build.js',
-    filename: 'vue-upload-web.js',  //打包生成文件的名字
-    library:'VueUploadWeb',   //reqire引入的名字
-    libraryTarget:'umd',
-    umdNamedDefine:true
+    filename: 'build.js',
+    // filename: 'vue-upload-web.js',  //打包生成文件的名字
+    // library:'VueUploadWeb',   //reqire引入的名字
+    // libraryTarget:'umd',
+    // umdNamedDefine:true
   },
   module: {
     rules: [
