@@ -20,6 +20,8 @@ Vue.use(vueUploadWeb)
 
 //组件中使用
 <vue-upload-web></vue-upload-web>
+
+IE9及以下版本使用的为flash,所以上传服务器地址不应使用https,应该使用http
 ```
 
 ## 配置
