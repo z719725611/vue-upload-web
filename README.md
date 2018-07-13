@@ -36,7 +36,7 @@ IE9及以下版本使用的为flash,所以上传服务器地址不应使用https
 ## 刷新调用refresh
 
 ```html
-this.$refs.refresh();
+this.$refs.upload.refresh();
 ```
 
 ### Api
