@@ -27,10 +27,16 @@ IE9及以下版本使用的为flash,所以上传服务器地址不应使用https
 ## 配置
 
 ```html
-<vue-upload-web :url="cdnUrl" :form-data="cdnParams" :accept="accept" :key-generator="keyGenerator"
+<vue-upload-web ref="upload" :url="cdnUrl" :form-data="cdnParams" :accept="accept" :key-generator="keyGenerator"
                             @progress="uploadProgress" @success="handleSuccess" @before="beforeUpload"
                             @error="error" @complete="handleComplete" upload-button=".btns" :multiple=true>
 </vue-upload-web>
+```
+
+## 刷新调用refresh
+
+```html
+this.$refs.refresh();
 ```
 
 ### Api
@@ -48,5 +54,6 @@ before| 上传前回调方法	|function|--
 error|上传失败回调方法	|function|--
 complete|上传完成回调方法，不管成功或者失败|function|--
 multiple|是否支持多文件上传|Boolean|false
+refresh|刷新调用|function|--
 
 

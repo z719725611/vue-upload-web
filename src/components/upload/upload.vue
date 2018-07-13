@@ -1,5 +1,10 @@
 <template>
     <div class="vue-upload-web">
+      <p class="hw-upload_tip" ref="uploader" v-if="showDownload">
+        <a class="hw-upload_link" :href="downloadFlashUrl" target="_blank">
+          <slot>请先安装Adobe Flash Player，安装后请重启浏览器</slot>
+        </a>
+      </p>
     </div>
 </template>
 
@@ -52,18 +57,51 @@
         type: String,
         default: '',
       },
+      downloadFlashUrl: {
+        type: String,
+        default: 'https://www.flash.cn/',
+      },
     },
     data() {
       return {
+        uploader: null,
+        showDownload: false
       };
     },
     mounted() {
+      const flashVersion = (function () {
+        let version;
+
+        try {
+          version = navigator.plugins['Shockwave Flash'];
+          version = version.description;
+        } catch (ex) {
+          try {
+            version = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
+          } catch (ex2) {
+            version = '0.0';
+          }
+        }
+        version = version.match(/\d+/g);
+        return parseFloat(`${version[0]}.${version[1]}`, 10);
+      }());
+
+      // 判断是否WebUploader支持的Flash
+      if (!WebUploader.Uploader.support('flash') && WebUploader.browser.ie < 10) {
+        if (!flashVersion || (flashVersion < 11.5)) {
+          // 没有安装flash player 或版本小
+          this.showDownload = true;
+        }
+
+        return;
+      }
+
       this.initWebUpload();
     },
     methods: {
       initWebUpload() {
         const self = this;
-        const uploader = WebUploader.create({
+        this.uploader = WebUploader.create({
           auto: true, // 选完文件后，是否自动上传
           swf: swgimg, // '/upload/Uploader.swf', // swf文件路径
           server: self.url,  // 文件接收服务端
@@ -82,22 +120,22 @@
           duplicate: true,  // 重复上传
         });
         // 当有文件被添加进队列的时候，添加到页面预览
-        uploader.on('fileQueued', (file) => {
+        this.uploader.on('fileQueued', (file) => {
           self.$emit('before', file);
         });
-        uploader.on('uploadStart', (file) => {
-          uploader.options.formData.key = self.keyGenerator(file);
+        this.uploader.on('uploadStart', (file) => {
+          self.uploader.options.formData.key = self.keyGenerator(file);
         });
 
         // 文件上传过程中创建进度条实时显示。
-        uploader.on('uploadProgress', (file, percentage) => {
+        this.uploader.on('uploadProgress', (file, percentage) => {
           self.$emit('progress', file, percentage);
         });
-        uploader.on('uploadSuccess', (file, response) => {
+        this.uploader.on('uploadSuccess', (file, response) => {
           self.$emit('success', file, response);
         });
 
-        uploader.on('error', (type) => {
+        this.uploader.on('error', (type) => {
           let errorMessage = '';
           if (type === 'F_EXCEED_SIZE') {
             errorMessage = `文件大小不能超过${self.fileSingleSizeLimit / (1024 * 1000)}M`;
@@ -109,15 +147,19 @@
           self.$emit('error', errorMessage);
         });
 
-        uploader.on('uploadComplete', (file, response) => {
+        this.uploader.on('uploadComplete', (file, response) => {
           self.$emit('complete', file, response);
         });
+      },
+      refresh() {
+        this.uploader.refresh();
       },
     },
   };
 </script>
 
 <style>
+
   .webuploader-container {
     position: relative;
   }
